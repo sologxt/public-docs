@@ -1,20 +1,26 @@
 # 查询
 
+通过使用HTTP REST的方式对可查询节点（Broker，Historical或Realtime）进行查询。该查询以JSON格式表示，并且每个节点类型都对外暴露相同的REST查询接口。对于正常的Druid操作，应向代理节点发出查询。
+
+queryType可选项：lucene_groupBy , lucene_search , lucene_segmentMetadata , lucene_select , lucene_timeBoundary , lucene_timeseries , lucene_topN
+
 ## groupBy
+
+这些类型的查询使用一个groupBy查询对象，并返回一个JSON对象数组，其中每个对象表示查询所要求的一个分组。
 ```
 {
-	"queryType":"lucene_groupBy",   
+	"queryType":"lucene_groupBy",
 	"dataSource":"com_HyoaKhQMl_project_rJIXzFOpe",
 	"intervals":[
 			 "2015-12-31T16:00:00.000Z/2017-04-14T15:59:59.999Z"
 	],
 	"filter":{
-		"type":"and",	
+		"type":"and",
 		"fields":[
 			<filter>,<filter>,...
 		]
-	}, 
-	"granularity": "all", 
+	},
+	"granularity": "all",
 	"dimension": ["name"],
 	"aggregations": [
 	    {
@@ -22,7 +28,7 @@
 	      	"aggregator": {
 		        "type": "lucene_thetaSketch",
 		        "name": "userTotal",
-		        "fieldName": "UserID"  
+		        "fieldName": "UserID"
 	      	},
 	      	"filter": {
 		        "type": "bound",
@@ -64,7 +70,7 @@
 		"columns":[
 			{
 				"dimension":"nation",
-				"direction":"ASCENDING", 
+				"direction":"ASCENDING",
 				"dimensionOrder":"lexicographic"
 			}
 		],
@@ -75,43 +81,44 @@
 	}
 }
 ```
-- queryType: 查询的类型，区分不同的查询  
-- dataSource: 数据源的名称，类似关系数据库中的表名  
-- intervals: 查询的时间段  
-- filter: 过滤条件  
-- filter.type: 过滤类型  
-- filter.fields: and过滤条件的参数  
-- granularity:查询粒度  
-    all： 将所有内容都装入一个bucke中。  
+- queryType: 查询的类型，区分不同的查询
+- dataSource: 数据源的名称，类似关系数据库中的表名
+- intervals: 查询的时间段
+- filter: 过滤条件
+- filter.type: 过滤类型
+- filter.fields: and过滤条件的参数
+- granularity:查询粒度
+    all： 将所有内容都装入一个bucke中。
     none： 没有数据桶（它实际上使用了索引的粒度最小在none这是毫秒的粒度）。目前不推荐none在TimeseriesQuery中使用（系统将尝试生成不存在的所有毫秒的0值，这通常是很多的）。
-- dimension: 分组的维度  
-- aggregations: 聚合函数  
-- postAggregations: 基于聚合函数的结果进一步处理  
-- having: having条件  
-- having.type: having的类型  
-- having.havingSpecs: and类型的Having的参数  
-- limitSpec.type: limit的类型    
-- limitSpec.limit: 数量限制  
-- limitSpec.columns: 排序的维度  
-- limitSpec.columns.dimension:排序的维度  
-- limitSpec.columns.direction:正序或倒序，ASCENDING or DESCENDING;  
-- limitSpec.columns.dimensionOrder:排序的方式，lexicographic、alphanumeric、numeric、strlen  
+- dimension: 分组的维度
+- aggregations: 聚合函数
+- postAggregations: 基于聚合函数的结果进一步处理
+- having: having条件
+- having.type: having的类型
+- having.havingSpecs: and类型的Having的参数
+- limitSpec.type: limit的类型
+- limitSpec.limit: 数量限制
+- limitSpec.columns: 排序的维度
+- limitSpec.columns.dimension:排序的维度
+- limitSpec.columns.direction:正序或倒序，ASCENDING or DESCENDING;
+- limitSpec.columns.dimensionOrder:排序的方式，lexicographic、alphanumeric、numeric、strlen
 - context: 其他context参数
 
 ## search
+查询返回与搜索规范匹配的维度值。
 queryType=lucene_search 时，参数：
 ```
 {
 	"queryType":"lucene_search",
-	"dataSource": "com_HyoaKhQMl_project_rJIXzFOpe", 
+	"dataSource": "com_HyoaKhQMl_project_rJIXzFOpe",
 	"filter":{
-		"type":"and",	
+		"type":"and",
 		"fields":[
 			<filter>,<filter>,...
 		]
 	},
-	"granularity":"all", 
-	"limit":50, 
+	"granularity":"all",
+	"limit":50,
 	"intervals": [
     	"2015-12-31T16:00:00.000Z/2017-04-14T15:59:59.999Z"
   	],
@@ -129,6 +136,9 @@ queryType=lucene_search 时，参数：
 - searchDimensions:搜索的维度
 
 ## segmentMetadata
+查询返回每个段的信息。
+
+
 queryType=lucene_segmentMetadata 时，参数：
 ```
 {
@@ -143,7 +153,7 @@ queryType=lucene_segmentMetadata 时，参数：
 	"merge":true,
 	"context":{
 		//Map<String, Object>
-	},  
+	},
 	"analysisTypes":[
 		//EnumSet<AnalysisType> analysisTypes
 	],
@@ -151,19 +161,21 @@ queryType=lucene_segmentMetadata 时，参数：
 	"lenientAggregatorMerge":true
 }
 ```
-- toInclude.type: none,不包含  
-- toInclude.type: all,包含所有,默认选项  
-- toInclude.type: list，包含指定项，此时需要toInclude.columns参数，值为["name", "age"]     
-- merge:是否合并所有元数据，默认为false  
-- analysisTypes:默认不填写，可以使用如下选项：  
-    CARDINALITY,    
-    SIZE,  
-    INTERVAL,  
-    AGGREGATORS,  
-    MINMAX,  
+- toInclude.type: none,不包含
+- toInclude.type: all,包含所有,默认选项
+- toInclude.type: list，包含指定项，此时需要toInclude.columns参数，值为["name", "age"]
+- merge:是否合并所有元数据，默认为false
+- analysisTypes:默认不填写，可以使用如下选项：
+    CARDINALITY,
+    SIZE,
+    INTERVAL,
+    AGGREGATORS,
+    MINMAX,
     QUERYGRANULARITY;
 
 ## select
+查询返回Druid原始的行，并支持分页。
+
 queryType=lucene_select 时，参数：
 ```
 {
@@ -172,7 +184,7 @@ queryType=lucene_select 时，参数：
     "intervals": "2017-02-10T02:00:00.000Z/2017-02-10T10:00:00.000Z",
     "descending":true,
     "filter":{
-		"type":"and",	
+		"type":"and",
 		"fields":[
 			<filter>,<filter>,...
 		]
@@ -182,7 +194,7 @@ queryType=lucene_select 时，参数：
 	    {
 		    "type": "default",
 		    "dimension": "ClientDeviceID",
-		    "outputName": "ClientDeviceId"      
+		    "outputName": "ClientDeviceId"
 	    }
     ],
     "pagingSpec": {
@@ -200,13 +212,15 @@ queryType=lucene_select 时，参数：
     }
 }
 ```
-- pagingSpec:分页信息  
-- pagingSpec.pagingIdentifiers:段信息，一般第一次查询时不填写，需要查第n页时，从上一次查询中获取该信息。  
-- pagingSpec.threshold：分页大小  
-- pagingSpec.fromNext：下一页从下一条记录开始，需要设置为true  
+- pagingSpec:分页信息
+- pagingSpec.pagingIdentifiers:段信息，一般第一次查询时不填写，需要查第n页时，从上一次查询中获取该信息。
+- pagingSpec.threshold：分页大小
+- pagingSpec.fromNext：下一页从下一条记录开始，需要设置为true
 - context.timeout:查询超时时间
 
 ## timeBoundary
+查询返回数据集的最早和最新的数据点。
+
 queryType=lucene_timeBoundary 时，参数：
 ```
 {
@@ -214,7 +228,7 @@ queryType=lucene_timeBoundary 时，参数：
     "intervals": [
     	"2015-12-31T16:00:00.000Z/2017-04-14T15:59:59.999Z"
     ],
-    "bound": "bound_string", 
+    "bound": "bound_string",
     "context": {
 	    "timeout": 600000
     }
@@ -223,6 +237,8 @@ queryType=lucene_timeBoundary 时，参数：
 - bound：最小最大时间，maxTime or minTime
 
 ## timeseries
+这些类型的查询使用一个时间查询对象，并返回一个JSON对象数组，其中每个对象表示由时间序列查询请求的值。
+
 queryType=lucene_timeseries 时，参数：
 ```
 {
@@ -241,7 +257,7 @@ queryType=lucene_timeseries 时，参数：
 	      	"aggregator": {
 		        "type": "lucene_thetaSketch",
 		        "name": "userTotal",
-		        "fieldName": "UserID"  
+		        "fieldName": "UserID"
 	      	},
 	      	"filter": {
 		        "type": "bound",
@@ -288,12 +304,12 @@ queryType=lucene_timeseries 时，参数：
           		},
           	"trunc": true
         	}
-        ]   
+        ]
 }
 ```
 
 ## topN
-TopN查询根据某些条件返回给定维度中的值的排序集合。  
+TopN查询根据某些条件返回给定维度中的值的排序集合。
 
 queryType=lucene_topN 时，参数：
 ```
@@ -309,11 +325,11 @@ queryType=lucene_topN 时，参数：
     	"2015-12-31T16:00:00.000Z/2017-04-14T15:59:59.999Z"
     ],
     "filter":{
-	"type":"and",	
+	"type":"and",
 	"fields":[
 		<filter>,<filter>,...
 	]
-    },  
+    },
     "granularity": "all",
     "aggregations": [
 	    {
@@ -321,7 +337,7 @@ queryType=lucene_topN 时，参数：
 	      	"aggregator": {
 		        "type": "lucene_thetaSketch",
 		        "name": "userTotal",
-		        "fieldName": "UserID"  
+		        "fieldName": "UserID"
 	      	},
 	      	"filter": {
 		        "type": "bound",
@@ -375,7 +391,7 @@ queryType=lucene_topN 时，参数：
     }
 }
 ```
-- threshold:topN的记录数  
+- threshold:topN的记录数
 
 metric.type可选项： numeric , lexicographic , alphaNumeric , inverted , 也可以是一个对象
 

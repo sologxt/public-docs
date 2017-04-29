@@ -2,20 +2,14 @@
 
 提取过滤器使用一些特定的提取function匹配维度。  
 
-extraction.type可选项：time , regex , partial , searchQuery , javascript , timeFormat , identity , lookup , registeredLookup , substring , cascade , stringFormat , upper , lower 
+extraction.type可选项：cascade , identity , javascript , lookup , lower , upper , partial , regex , registeredLookup , searchQuery , stringFormat , substring
 
-### 时间
-extraction.type=time 时，参数：
-```
-{
-    "type":"time",
-    "timeFormat": "<timeFormat_string>",
-    "resultFormat": "<resultFormat_string>",
-}
-```
-将日期格式提取为指定的格式
+
+
 
 ### 正则表达式
+对匹配正则表达式的维度值进行提取
+
 extraction.type=regex 时，参数：
 ```
 {
@@ -25,7 +19,7 @@ extraction.type=regex 时，参数：
     "replaceMissingValueWith":"replace_string"
 }
 ```
-对匹配正则表达式的维度值进行提取
+
 - expr:表达式
 - replaceMissingValue:是否替换缺失的值
 - replaceMissingValueWith：以什么字符串进行替换
@@ -58,6 +52,9 @@ filter.extraction.type=searchQuery 时，参数：
 
 
 ### javascript
+
+按照javascript的函数进行提取
+
 filter.extraction.type=javascript 时，参数：
 ```
 {
@@ -69,30 +66,10 @@ filter.extraction.type=javascript 时，参数：
     }
 }
 ```
-- function:javascript函数  
+- function:javascript函数
 
-按照javascript的函数进行提取
 
-### 时间格式
 
-filter.extraction.type=timeFormat 时，参数：
-```
-{
-    "type":"timeFormat",
-    "query":{
-	"type":"contains",
-	"format":"pattern_string",
-        "timeZone":{
-    	    <dateTimeZone>
-    	},
-      	"locale":"locale_string"
-    }
-}
-```
-以特定格式，时区或语言环境来提取时间戳。
-
-- timeZone:时区
-- locale:地点
 
 **example**
 
@@ -111,13 +88,16 @@ filter.extraction.type=timeFormat 时，参数：
 ```
 
 ### 自增
+
+提取identity
+
 filter.extraction.type=identity 时，参数：
 ```
 {
     "type":"identity"
 }
 ```
-提取identity
+
 
 ### 查找
 filter.extraction.type=lookup 时，参数：
@@ -125,15 +105,15 @@ filter.extraction.type=lookup 时，参数：
 {
     "type":"lookup",
     "lookup": {
-	    "lookup":<lookup>, 
-	    "retainMissingValue":true 
-	    "replaceMissingValueWith":"<replaceMissingValueWith_string>", 
-	    "injective":true, 
+	    "lookup":<lookup>,
+	    "retainMissingValue":true
+	    "replaceMissingValueWith":"<replaceMissingValueWith_string>",
+	    "injective":true,
 	    "optimize":true
-    },    
-    "retainMissingValue":true,	
-    "replaceMissingValueWith":"replace_string",	
-    "injective":true, 
+    },
+    "retainMissingValue":true,
+    "replaceMissingValueWith":"replace_string",
+    "injective":true,
     "optimize":true
 }
 ```
@@ -166,15 +146,18 @@ filter.extraction.type=registeredLookup 时，参数：
 {
     "type":"registeredLookup",
     "lookup":"lookup_string",
-    "retainMissingValue":true,   
-    "replaceMissingValueWith":"replace_string",  
-    "injective":true,  
-    "optimize":true, 
+    "retainMissingValue":true,
+    "replaceMissingValueWith":"replace_string",
+    "injective":true,
+    "optimize":true,
 }
 ```
 
 
 ### 截取字符串
+
+将字符串按照指定的起始位置和长度进行截取
+
 filter.extraction.type=substring 时，参数：
 ```
 {
@@ -184,9 +167,9 @@ filter.extraction.type=substring 时，参数：
 }
 ```
 - index:起始位置
-- length:截取的长度  
+- length:截取的长度
 
-将字符串按照指定的起始位置和长度进行截取
+
 
 ### 级联
 filter.extraction.type=cascade 时，参数：
@@ -200,6 +183,9 @@ filter.extraction.type=cascade 时，参数：
 ```
 
 ### 字符串格式
+
+将字符串按照指定的格式进行提取
+
 filter.extraction.type=stringFormat 时，参数：
 ```
 {
@@ -207,13 +193,16 @@ filter.extraction.type=stringFormat 时，参数：
     "format":"format_string",
     "nullHandling":{
  	    <nullHandling>
-    }  
+    }
 }
 ```
 - format:格式
-将字符串按照指定的格式进行提取
+
 
 ### 大写
+
+将指定的字符串提取成小写的格式。
+
 filter.extraction.type=upper 时，参数：
 ```
 {
@@ -221,9 +210,12 @@ filter.extraction.type=upper 时，参数：
     "locale":"locale_string"
 }
 ```
-将指定的字符串提取成小写的格式。
+
 
 ### 小写
+
+将指定的字符串提取为大写的格式。
+
 filter.extraction.type=lower 时，参数：
 ```
 {
@@ -231,4 +223,3 @@ filter.extraction.type=lower 时，参数：
     "locale":"locale_string"
 }
 ```
-将指定的字符串提取为大写的格式。
