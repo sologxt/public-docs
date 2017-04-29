@@ -81,7 +81,7 @@ queryType可选项：lucene_groupBy , lucene_search , lucene_segmentMetadata , l
 	}
 }
 ```
-- queryType: 查询的类型，区分不同的查询
+- queryType: 查询类型，区分不同的查询
 - dataSource: 数据源的名称，类似关系数据库中的表名
 - intervals: 查询的时间段
 - filter: 过滤条件
